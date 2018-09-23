@@ -4,4 +4,6 @@ obj/
 .vscode/
 *.user
 
+artifacts/
+
 _ReSharper.Caches/

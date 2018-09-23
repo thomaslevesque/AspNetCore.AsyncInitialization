@@ -36,23 +36,45 @@ namespace build
             }
 
             Directory.SetCurrentDirectory(GetSolutionDirectory());
+
+            string artifactsDir = Path.GetFullPath("artifacts");
+            string logsDir = Path.Combine(artifactsDir, "logs");
+            string buildLogFile = Path.Combine(logsDir, "build.binlog");
+            string packagesDir = Path.Combine(artifactsDir, "packages");
+
             string solutionFile = "AspNetCore.AsyncInitialization.sln";
             string libraryProject = "src/AspNetCore.AsyncInitialization/AspNetCore.AsyncInitialization.csproj";
             string testProject = "tests/AspNetCore.AsyncInitialization.Tests/AspNetCore.AsyncInitialization.Tests.csproj";
 
             Target(
+                "artifactDirectories",
+                () =>
+                {
+                    Directory.CreateDirectory(artifactsDir);
+                    Directory.CreateDirectory(logsDir);
+                    Directory.CreateDirectory(packagesDir);
+                });
+
+            Target(
                 "build",
-                () => Run("dotnet", $"build -c \"{Configuration}\" /p:Version=\"{Version}\" \"{solutionFile}\""));
+                DependsOn("artifactDirectories"),
+                () => Run(
+                    "dotnet",
+                    $"build -c \"{Configuration}\" /p:Version=\"{Version}\" /bl:\"{buildLogFile}\" \"{solutionFile}\""));
 
             Target(
                 "test",
                 DependsOn("build"),
-                () => Run("dotnet", $"test -c \"{Configuration}\" --no-build \"{testProject}\""));
+                () => Run(
+                    "dotnet",
+                    $"test -c \"{Configuration}\" --no-build \"{testProject}\""));
 
             Target(
                 "pack",
-                DependsOn("build"),
-                () => Run("dotnet", $"pack -c \"{Configuration}\" --no-build /p:Version=\"{Version}\" \"{libraryProject}\""));
+                DependsOn("artifactDirectories", "build"),
+                () => Run(
+                    "dotnet",
+                    $"pack -c \"{Configuration}\" --no-build /p:Version=\"{Version}\" -o \"{packagesDir}\" \"{libraryProject}\""));
 
             Target("default", DependsOn("test", "pack"));
 
