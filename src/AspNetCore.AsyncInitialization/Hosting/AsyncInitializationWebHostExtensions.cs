@@ -5,6 +5,7 @@ using AspNetCore.AsyncInitialization;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
+// ReSharper disable once CheckNamespace
 namespace Microsoft.AspNetCore.Hosting
 {
     public static class AsyncInitializationWebHostExtensions
@@ -23,6 +24,7 @@ namespace Microsoft.AspNetCore.Hosting
             await initializer.InitializeAsync();
         }
 
+        // ReSharper disable once ClassNeverInstantiated.Local
         private class AsyncInitializer
         {
             private readonly ILogger<AsyncInitializer> _logger;
@@ -30,8 +32,8 @@ namespace Microsoft.AspNetCore.Hosting
 
             public AsyncInitializer(ILogger<AsyncInitializer> logger, IEnumerable<IAsyncInitializer> initializers)
             {
-                this._logger = logger;
-                this._initializers = initializers;
+                _logger = logger;
+                _initializers = initializers;
             }
 
             public async Task InitializeAsync()
@@ -42,20 +44,16 @@ namespace Microsoft.AspNetCore.Hosting
                 {
                     foreach (var initializer in _initializers)
                     {
-                        var scopeData = new Dictionary<string, object>{ { "InitializerType", initializer.GetType() } };
-                        using (_logger.BeginScope(scopeData))
+                        _logger.LogDebug("Starting async initialization for {InitializerType}", initializer.GetType());
+                        try
                         {
-                            _logger.LogDebug("Starting async initialization for {InitializerType}", initializer.GetType());
-                            try
-                            {
-                                await initializer.InitializeAsync();
-                                _logger.LogDebug("Async initialization for {InitializerType} completed", initializer.GetType());
-                            }
-                            catch (Exception ex)
-                            {
-                                _logger.LogError(ex, "Async initialization for {InitializerType} failed", initializer.GetType());
-                                throw;
-                            }
+                            await initializer.InitializeAsync();
+                            _logger.LogDebug("Async initialization for {InitializerType} completed", initializer.GetType());
+                        }
+                        catch (Exception ex)
+                        {
+                            _logger.LogError(ex, "Async initialization for {InitializerType} failed", initializer.GetType());
+                            throw;
                         }
                     }
 
