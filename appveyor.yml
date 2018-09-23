@@ -1,0 +1,17 @@
+version: '{build}'
+image: Visual Studio 2017
+
+pull_requests:
+  do_not_increment_build_number: true
+
+build_script:
+- cmd: build.cmd
+
+on_failure:
+  - ps: $root = (Resolve-Path artifacts); [IO.Directory]::GetFiles($root.Path, '*.*', 'AllDirectories') | % { Push-AppveyorArtifact $_ -FileName $_.Substring($root.Path.Length + 1) -DeploymentName failed-build }
+
+nuget:
+  disable_publish_on_pr: true
+
+artifacts:
+- path: .\artifacts\*\*
