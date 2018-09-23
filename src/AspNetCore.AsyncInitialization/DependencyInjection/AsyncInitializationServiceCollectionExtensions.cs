@@ -2,6 +2,7 @@ using System;
 using System.Threading.Tasks;
 using AspNetCore.AsyncInitialization;
 
+// ReSharper disable once CheckNamespace
 namespace Microsoft.Extensions.DependencyInjection
 {
     public static class AsyncInitializationServiceCollectionExtensions
@@ -16,6 +17,11 @@ namespace Microsoft.Extensions.DependencyInjection
             where TInitializer : class, IAsyncInitializer
         {
             return services.AddSingleton<IAsyncInitializer>(initializer);
+        }
+
+        public static IServiceCollection AddAsyncInitializer(this IServiceCollection services, Func<IServiceProvider, IAsyncInitializer> implementationFactory)
+        {
+            return services.AddTransient(implementationFactory);
         }
 
         public static IServiceCollection AddAsyncInitializer(this IServiceCollection services, Func<Task> initializer)
