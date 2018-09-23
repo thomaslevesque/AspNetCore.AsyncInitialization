@@ -9,8 +9,11 @@ namespace Microsoft.AspNetCore.Hosting
     {
         public static async Task InitAsync(this IWebHost host)
         {
-            var initializer = host.Services.GetRequiredService<AsyncInitializer>();
-            await initializer.InitializeAsync();
+            using (var scope = host.Services.CreateScope())
+            {
+                var initializer = scope.ServiceProvider.GetRequiredService<AsyncInitializer>();
+                await initializer.InitializeAsync();
+            }
         }
     }
 }
