@@ -1,8 +1,14 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <Version>1.0.0</Version>
+    <Authors>Thomas Levesque</Authors>
+    <Title>ASP.NET Core async initialization</Title>
+    <Description>A simple helper to perform async application initialization in ASP.NET Core 2.0 or higher.</Description>
+    <PackageProjectUrl>https://github.com/thomaslevesque/AspNetCore.AsyncInitialization</PackageProjectUrl>
+    <PackageLicenseUrl>https://github.com/thomaslevesque/AspNetCore.AsyncInitialization/blob/master/LICENSE.txt</PackageLicenseUrl>
+    <PackageTags>asp.net core;aspnetcore;async;initialization</PackageTags>
+    <RepositoryUrl>https://github.com/thomaslevesque/AspNetCore.AsyncInitialization</RepositoryUrl>
   </PropertyGroup>
 
   <ItemGroup>
