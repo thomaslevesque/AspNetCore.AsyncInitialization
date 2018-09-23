@@ -18,7 +18,7 @@ A simple helper to perform async application initialization in ASP.NET Core 2.0 
     ```
 
 
-1. Create a class (or several) that implements `IAsyncInitializer`. This class can depend on any non-scoped service.
+1. Create a class (or several) that implements `IAsyncInitializer`. This class can depend on any registered service.
 
     ```csharp
     public class MyAppInitializer : IAsyncInitializer
