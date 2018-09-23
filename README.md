@@ -4,6 +4,19 @@ A simple helper to perform async application initialization in ASP.NET Core 2.0 
 
 ## Usage
 
+1. Install the [AspNetCore.AsyncInitialization](https://www.nuget.org/packages/AspNetCore.AsyncInitialization/) NuGet package:
+
+Command line:
+```PowerShell
+dotnet add package AspNetCore.AsyncInitialization
+```
+
+Package manager console:
+```PowerShell
+Install-Package AspNetCore.AsyncInitialization
+```
+
+
 1. Create a class (or several) that implements `IAsyncInitializer`. This class can depend on any non-scoped service.
 
 ```csharp
@@ -21,13 +34,13 @@ public class MyAppInitializer : IAsyncInitializer
 }
 ```
 
-2. Register your initializer(s) in the `Startup.ConfigureServices` method:
+1. Register your initializer(s) in the `Startup.ConfigureServices` method:
 
 ```csharp
     services.AddAsyncInitializer<MyAppInitializer>();
 ```
 
-3. In the `Program` class, make the `Main` method async and change its code to initialize the host before running it:
+1. In the `Program` class, make the `Main` method async and change its code to initialize the host before running it:
 
 ```csharp
 public static async Task Main(string[] args)
