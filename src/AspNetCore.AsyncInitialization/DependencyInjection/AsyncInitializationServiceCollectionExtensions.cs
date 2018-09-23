@@ -1,32 +1,47 @@
 using System;
 using System.Threading.Tasks;
 using AspNetCore.AsyncInitialization;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 // ReSharper disable once CheckNamespace
 namespace Microsoft.Extensions.DependencyInjection
 {
     public static class AsyncInitializationServiceCollectionExtensions
     {
+        public static IServiceCollection AddAsyncInitialization(this IServiceCollection services)
+        {
+            services.TryAddTransient<AsyncInitializer>();
+            return services;
+        }
+
         public static IServiceCollection AddAsyncInitializer<TInitializer>(this IServiceCollection services)
             where TInitializer : class, IAsyncInitializer
         {
-            return services.AddTransient<IAsyncInitializer, TInitializer>();
+            return services
+                .AddAsyncInitialization()
+                .AddTransient<IAsyncInitializer, TInitializer>();
         }
 
         public static IServiceCollection AddAsyncInitializer<TInitializer>(this IServiceCollection services, TInitializer initializer)
             where TInitializer : class, IAsyncInitializer
         {
-            return services.AddSingleton<IAsyncInitializer>(initializer);
+            return services
+                .AddAsyncInitialization()
+                .AddSingleton<IAsyncInitializer>(initializer);
         }
 
         public static IServiceCollection AddAsyncInitializer(this IServiceCollection services, Func<IServiceProvider, IAsyncInitializer> implementationFactory)
         {
-            return services.AddTransient(implementationFactory);
+            return services
+                .AddAsyncInitialization()
+                .AddTransient(implementationFactory);
         }
 
         public static IServiceCollection AddAsyncInitializer(this IServiceCollection services, Func<Task> initializer)
         {
-            return services.AddSingleton<IAsyncInitializer>(new DelegateAsyncInitializer(initializer));
+            return services
+                .AddAsyncInitialization()
+                .AddSingleton<IAsyncInitializer>(new DelegateAsyncInitializer(initializer));
         }
 
         private class DelegateAsyncInitializer : IAsyncInitializer

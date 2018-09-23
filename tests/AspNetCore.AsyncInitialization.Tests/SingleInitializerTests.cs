@@ -13,7 +13,6 @@ namespace AspNetCore.AsyncInitialization.Tests
         {
             var host = new WebHostBuilder()
                 .UseStartup<Startup>()
-                .UseAsyncInitialization()
                 .Build();
 
             await host.InitAsync();
