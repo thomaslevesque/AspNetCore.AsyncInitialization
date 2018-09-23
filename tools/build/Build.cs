@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Runtime.CompilerServices;
 using McMaster.Extensions.CommandLineUtils;
 using static Bullseye.Targets;
@@ -17,7 +18,7 @@ namespace build
         public bool ShowHelp { get; } = false;
 
         [Option("-v|--version", "The version to build", CommandOptionType.SingleValue)]
-        public string Version { get; } = "0.0.0";
+        public string Version { get; } = null;
 
         [Option("-c|--configuration", "The configuration to build", CommandOptionType.SingleValue)]
         public string Configuration { get; } = "Release";
@@ -46,6 +47,8 @@ namespace build
             string libraryProject = "src/AspNetCore.AsyncInitialization/AspNetCore.AsyncInitialization.csproj";
             string testProject = "tests/AspNetCore.AsyncInitialization.Tests/AspNetCore.AsyncInitialization.Tests.csproj";
 
+            string version = GetVersion();
+
             Target(
                 "artifactDirectories",
                 () =>
@@ -60,7 +63,7 @@ namespace build
                 DependsOn("artifactDirectories"),
                 () => Run(
                     "dotnet",
-                    $"build -c \"{Configuration}\" /p:Version=\"{Version}\" /bl:\"{buildLogFile}\" \"{solutionFile}\""));
+                    $"build -c \"{Configuration}\" /p:Version=\"{version}\" /bl:\"{buildLogFile}\" \"{solutionFile}\""));
 
             Target(
                 "test",
@@ -74,11 +77,23 @@ namespace build
                 DependsOn("artifactDirectories", "build"),
                 () => Run(
                     "dotnet",
-                    $"pack -c \"{Configuration}\" --no-build /p:Version=\"{Version}\" -o \"{packagesDir}\" \"{libraryProject}\""));
+                    $"pack -c \"{Configuration}\" --no-build /p:Version=\"{version}\" -o \"{packagesDir}\" \"{libraryProject}\""));
 
             Target("default", DependsOn("test", "pack"));
 
             RunTargets(RemainingArguments);
+
+            string GetVersion()
+            {
+                if (!string.IsNullOrEmpty(Version))
+                    return Version;
+
+                var tag = Environment.GetEnvironmentVariable("APPVEYOR_REPO_TAG_NAME");
+                if (!string.IsNullOrEmpty(tag))
+                    return tag;
+
+                return "0.0.0";
+            }
         }
 
         private static string GetSolutionDirectory() =>
