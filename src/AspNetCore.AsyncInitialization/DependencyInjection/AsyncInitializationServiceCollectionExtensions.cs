@@ -65,6 +65,19 @@ namespace Microsoft.Extensions.DependencyInjection
         }
 
         /// <summary>
+        /// Adds an async initializer of the specified type
+        /// </summary>
+        /// <param name="services">The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" /> to add the service to.</param>
+        /// <param name="initializerType">The type of the async initializer to add.</param>
+        /// <returns>A reference to this instance after the operation has completed.</returns>
+        public static IServiceCollection AddAsyncInitializer(this IServiceCollection services, Type initializerType)
+        {
+            return services
+                .AddAsyncInitialization()
+                .AddTransient(typeof(IAsyncInitializer), initializerType);
+        }
+
+        /// <summary>
         /// Adds an async initializer whose implementation is the specified delegate.
         /// </summary>
         /// <param name="services">The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection" /> to add the service to.</param>

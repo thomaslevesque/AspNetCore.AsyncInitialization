@@ -42,6 +42,7 @@ namespace AspNetCore.AsyncInitialization
             catch(Exception ex)
             {
                 _logger.LogError(ex, "Async initialization failed");
+                throw;
             }
         }
     }
