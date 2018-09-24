@@ -69,6 +69,30 @@ namespace AspNetCore.AsyncInitialization.Tests
             await host.InitAsync();
         }
 
+        [Fact]
+        public async Task Failing_initializer_makes_initialization_fail()
+        {
+            var initializer1 = A.Fake<IAsyncInitializer>();
+            var initializer2 = A.Fake<IAsyncInitializer>();
+            var initializer3 = A.Fake<IAsyncInitializer>();
+
+            A.CallTo(() => initializer2.InitializeAsync()).ThrowsAsync(() => new Exception("oops"));
+
+            var host = CreateHost(services =>
+            {
+                services.AddAsyncInitializer(initializer1);
+                services.AddAsyncInitializer(initializer2);
+                services.AddAsyncInitializer(initializer3);
+            });
+
+            var exception = await Record.ExceptionAsync(() => host.InitAsync());
+            Assert.IsType<Exception>(exception);
+            Assert.Equal("oops", exception.Message);
+
+            A.CallTo(() => initializer1.InitializeAsync()).MustHaveHappenedOnceExactly();
+            A.CallTo(() => initializer3.InitializeAsync()).MustNotHaveHappened();
+        }
+
         private static IWebHost CreateHost(Action<IServiceCollection> configureServices, bool validateScopes = false) =>
             new WebHostBuilder()
                 .UseStartup<Startup>()
