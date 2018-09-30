@@ -52,6 +52,6 @@ A simple helper to perform async application initialization in ASP.NET Core 2.0 
     }
     ```
 
-(Note that you need to [set the C# langage version to 7.1 or higher in your project](https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/configure-language-version#edit-the-csproj-file) to enable the "async Main" feature.)
+(Note that you need to [set the C# language version to 7.1 or higher in your project](https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/configure-language-version#edit-the-csproj-file) to enable the "async Main" feature.)
 
 This will run each initializer, in the order in which they were registered.
