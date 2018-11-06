@@ -18,17 +18,17 @@ namespace AspNetCore.AsyncInitialization
 
         public async Task InitializeAsync()
         {
-            _logger.LogDebug("Starting async initialization");
+            _logger.LogInformation("Starting async initialization");
 
             try
             {
                 foreach (var initializer in _initializers)
                 {
-                    _logger.LogDebug("Starting async initialization for {InitializerType}", initializer.GetType());
+                    _logger.LogInformation("Starting async initialization for {InitializerType}", initializer.GetType());
                     try
                     {
                         await initializer.InitializeAsync();
-                        _logger.LogDebug("Async initialization for {InitializerType} completed", initializer.GetType());
+                        _logger.LogInformation("Async initialization for {InitializerType} completed", initializer.GetType());
                     }
                     catch (Exception ex)
                     {
@@ -37,7 +37,7 @@ namespace AspNetCore.AsyncInitialization
                     }
                 }
 
-                _logger.LogDebug("Async initialization completed");
+                _logger.LogInformation("Async initialization completed");
             }
             catch(Exception ex)
             {
