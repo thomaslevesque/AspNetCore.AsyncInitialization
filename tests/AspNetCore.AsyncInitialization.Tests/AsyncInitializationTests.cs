@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using FakeItEasy;
 using Microsoft.AspNetCore.Builder;
@@ -91,6 +92,80 @@ namespace AspNetCore.AsyncInitialization.Tests
 
             A.CallTo(() => initializer1.InitializeAsync()).MustHaveHappenedOnceExactly();
             A.CallTo(() => initializer3.InitializeAsync()).MustNotHaveHappened();
+        }
+
+        [Fact]
+        public async Task Parallel_initializers_are_run_in_parallel()
+        {
+            var initializers = Enumerable.Range(0, 6)
+                .Select(_ => CreateInitializer())
+                .ToList();
+
+            var host = CreateHost(services =>
+            {
+                // 0 and 1 in parallel
+                // then 2 alone
+                // then 3, 4 and 5 in parallel
+
+                services.AddParallelAsyncInitializers(builder => 
+                {
+                    builder.AddAsyncInitializer(initializers[0].initializer);
+                    builder.AddAsyncInitializer(initializers[1].initializer);
+                });
+                services.AddAsyncInitializer(initializers[2].initializer);
+                services.AddParallelAsyncInitializers(builder => 
+                {
+                    builder.AddAsyncInitializer(initializers[3].initializer);
+                    builder.AddAsyncInitializer(initializers[4].initializer);
+                    builder.AddAsyncInitializer(initializers[5].initializer);
+                });
+            });
+
+            var initializationTask = host.InitAsync();
+            MustHaveStarted(0, 1);
+            MustNotHaveStarted(2, 3, 4, 5);
+            
+            CompleteInitializers(0, 1);
+            MustHaveStarted(2);
+            MustNotHaveStarted(3, 4, 5);
+
+            CompleteInitializers(2);
+            MustHaveStarted(3, 4, 5);
+            CompleteInitializers(3, 4, 5);
+
+            await initializationTask;
+
+            void MustHaveStarted(params int[] initializerIndexes)
+            {
+                foreach (var index in initializerIndexes)
+                {
+                    A.CallTo(() => initializers[index].initializer.InitializeAsync()).MustHaveHappened();
+                }
+            }
+
+            void MustNotHaveStarted(params int[] initializerIndexes)
+            {
+                foreach (var index in initializerIndexes)
+                {
+                    A.CallTo(() => initializers[index].initializer.InitializeAsync()).MustNotHaveHappened();
+                }
+            }
+
+            void CompleteInitializers(params int[] initializerIndexes)
+            {
+                foreach (var index in initializerIndexes)
+                {
+                    initializers[index].completionSource.SetResult(0);
+                }
+            }
+
+            (IAsyncInitializer initializer, TaskCompletionSource<int> completionSource) CreateInitializer()
+            {
+                var initializer = A.Fake<IAsyncInitializer>();
+                var tcs = new TaskCompletionSource<int>();
+                A.CallTo(() => initializer.InitializeAsync()).Returns(tcs.Task);
+                return (initializer, tcs);
+            }
         }
 
         private static IWebHost CreateHost(Action<IServiceCollection> configureServices, bool validateScopes = false) =>
