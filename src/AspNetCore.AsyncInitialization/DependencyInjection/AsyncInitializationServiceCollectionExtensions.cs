@@ -11,6 +11,9 @@ namespace Microsoft.Extensions.DependencyInjection
     /// </summary>
     public static class AsyncInitializationServiceCollectionExtensions
     {
+
+        private static int _nextInitializerOrder = 0;
+
         /// <summary>
         /// Registers necessary services for async initialization support.
         /// </summary>
@@ -31,9 +34,11 @@ namespace Microsoft.Extensions.DependencyInjection
         public static IServiceCollection AddAsyncInitializer<TInitializer>(this IServiceCollection services)
             where TInitializer : class, IAsyncInitializer
         {
+            int order = _nextInitializerOrder++;
             return services
                 .AddAsyncInitialization()
-                .AddTransient<IAsyncInitializer, TInitializer>();
+                .AddTransient<TInitializer>()
+                .AddTransient<IOrderedAsyncInitializer>(sp => new OrderedAsyncInitializer(sp.GetRequiredService<TInitializer>(), order));
         }
 
         /// <summary>
@@ -46,9 +51,10 @@ namespace Microsoft.Extensions.DependencyInjection
         public static IServiceCollection AddAsyncInitializer<TInitializer>(this IServiceCollection services, TInitializer initializer)
             where TInitializer : class, IAsyncInitializer
         {
+            int order = _nextInitializerOrder++;
             return services
                 .AddAsyncInitialization()
-                .AddSingleton<IAsyncInitializer>(initializer);
+                .AddTransient<IOrderedAsyncInitializer>(sp => new OrderedAsyncInitializer(initializer, order));
         }
 
         /// <summary>
@@ -59,9 +65,10 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <returns>A reference to this instance after the operation has completed.</returns>
         public static IServiceCollection AddAsyncInitializer(this IServiceCollection services, Func<IServiceProvider, IAsyncInitializer> implementationFactory)
         {
+            int order = _nextInitializerOrder++;
             return services
                 .AddAsyncInitialization()
-                .AddTransient(implementationFactory);
+                .AddTransient<IOrderedAsyncInitializer>(sp => new OrderedAsyncInitializer(implementationFactory(sp), order));
         }
 
         /// <summary>
@@ -72,9 +79,11 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <returns>A reference to this instance after the operation has completed.</returns>
         public static IServiceCollection AddAsyncInitializer(this IServiceCollection services, Type initializerType)
         {
+            int order = _nextInitializerOrder++;
             return services
                 .AddAsyncInitialization()
-                .AddTransient(typeof(IAsyncInitializer), initializerType);
+                .AddTransient(typeof(IAsyncInitializer), initializerType)
+                .AddTransient<IOrderedAsyncInitializer>(sp => new OrderedAsyncInitializer((IAsyncInitializer) sp.GetRequiredService(initializerType), order));
         }
 
         /// <summary>
@@ -85,9 +94,10 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <returns>A reference to this instance after the operation has completed.</returns>
         public static IServiceCollection AddAsyncInitializer(this IServiceCollection services, Func<Task> initializer)
         {
+            int order = _nextInitializerOrder++;
             return services
                 .AddAsyncInitialization()
-                .AddSingleton<IAsyncInitializer>(new DelegateAsyncInitializer(initializer));
+                .AddTransient<IOrderedAsyncInitializer>(sp => new OrderedAsyncInitializer(new DelegateAsyncInitializer(initializer), order));
         }
 
         private class DelegateAsyncInitializer : IAsyncInitializer
