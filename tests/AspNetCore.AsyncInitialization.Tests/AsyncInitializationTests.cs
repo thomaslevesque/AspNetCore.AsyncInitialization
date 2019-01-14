@@ -11,6 +11,14 @@ namespace AspNetCore.AsyncInitialization.Tests
     public class AsyncInitializationTests
     {
         [Fact]
+        public async Task InitAsync_without_initializer_works()
+        {
+            var host = CreateHost(_ => {});
+
+            await host.InitAsync();
+        }
+
+        [Fact]
         public async Task Single_initializer_is_called()
         {
             var initializer = A.Fake<IAsyncInitializer>();

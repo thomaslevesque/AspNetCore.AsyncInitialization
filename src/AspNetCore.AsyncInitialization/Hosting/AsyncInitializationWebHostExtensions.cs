@@ -19,8 +19,11 @@ namespace Microsoft.AspNetCore.Hosting
         {
             using (var scope = host.Services.CreateScope())
             {
-                var initializer = scope.ServiceProvider.GetRequiredService<AsyncInitializer>();
-                await initializer.InitializeAsync();
+                var initializer = scope.ServiceProvider.GetService<AsyncInitializer>();
+                if (initializer != null)
+                {
+                    await initializer.InitializeAsync();
+                }
             }
         }
     }
