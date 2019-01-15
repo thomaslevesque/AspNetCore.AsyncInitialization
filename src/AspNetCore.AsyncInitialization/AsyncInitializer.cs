@@ -5,12 +5,12 @@ using Microsoft.Extensions.Logging;
 
 namespace AspNetCore.AsyncInitialization
 {
-    internal class AsyncInitializer
+    internal class RootInitializer
     {
-        private readonly ILogger<AsyncInitializer> _logger;
+        private readonly ILogger<RootInitializer> _logger;
         private readonly IEnumerable<IAsyncInitializer> _initializers;
 
-        public AsyncInitializer(ILogger<AsyncInitializer> logger, IEnumerable<IAsyncInitializer> initializers)
+        public RootInitializer(ILogger<RootInitializer> logger, IEnumerable<IAsyncInitializer> initializers)
         {
             _logger = logger;
             _initializers = initializers;

@@ -18,7 +18,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <returns>A reference to this instance after the operation has completed.</returns>
         public static IServiceCollection AddAsyncInitialization(this IServiceCollection services)
         {
-            services.TryAddTransient<AsyncInitializer>();
+            services.TryAddTransient<RootInitializer>();
             return services;
         }
 
