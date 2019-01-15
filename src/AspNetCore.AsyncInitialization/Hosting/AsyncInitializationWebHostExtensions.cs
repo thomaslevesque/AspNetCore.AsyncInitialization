@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using AspNetCore.AsyncInitialization;
 using Microsoft.Extensions.DependencyInjection;
@@ -19,8 +20,13 @@ namespace Microsoft.AspNetCore.Hosting
         {
             using (var scope = host.Services.CreateScope())
             {
-                var initializer = scope.ServiceProvider.GetRequiredService<RootInitializer>();
-                await initializer.InitializeAsync();
+                var rootInitializer = scope.ServiceProvider.GetService<RootInitializer>();
+                if (rootInitializer == null)
+                {
+                    throw new InvalidOperationException("The async initialization service isn't registered, register it by calling AddAsyncInitialization() on the service collection or by adding an async initializer.");
+                }
+
+                await rootInitializer.InitializeAsync();
             }
         }
     }

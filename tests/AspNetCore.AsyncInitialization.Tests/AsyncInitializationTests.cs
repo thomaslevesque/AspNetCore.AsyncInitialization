@@ -93,6 +93,15 @@ namespace AspNetCore.AsyncInitialization.Tests
             A.CallTo(() => initializer3.InitializeAsync()).MustNotHaveHappened();
         }
 
+        [Fact]
+        public async Task InitAsync_throws_InvalidOperationException_when_services_are_not_registered()
+        {
+            var host = CreateHost(services => { });
+            var exception = await Record.ExceptionAsync(() => host.InitAsync());
+            Assert.IsType<InvalidOperationException>(exception);
+            Assert.Equal("The async initialization service isn't registered, register it by calling AddAsyncInitialization() on the service collection or by adding an async initializer.", exception.Message);
+        }
+
         private static IWebHost CreateHost(Action<IServiceCollection> configureServices, bool validateScopes = false) =>
             new WebHostBuilder()
                 .UseStartup<Startup>()
