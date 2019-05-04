@@ -9,6 +9,8 @@ pull_requests:
 build_script:
 - cmd: build.cmd
 
+test: off
+
 on_failure:
   - ps: $root = (Resolve-Path artifacts); [IO.Directory]::GetFiles($root.Path, '*.*', 'AllDirectories') | % { Push-AppveyorArtifact $_ -FileName $_.Substring($root.Path.Length + 1) -DeploymentName failed-build }
 
