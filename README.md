@@ -1,8 +1,8 @@
 # AspNetCore.AsyncInitialization
 
-[![NuGet version](https://img.shields.io/nuget/v/AspNetCore.AsyncInitialization.svg)](https://www.nuget.org/packages/AspNetCore.AsyncInitialization)
-[![AppVeyor build](https://img.shields.io/appveyor/ci/thomaslevesque/aspnetcore-asyncinitialization.svg)](https://ci.appveyor.com/project/thomaslevesque/aspnetcore-asyncinitialization)
-[![AppVeyor tests](https://img.shields.io/appveyor/tests/thomaslevesque/aspnetcore-asyncinitialization.svg)](https://ci.appveyor.com/project/thomaslevesque/aspnetcore-asyncinitialization/build/tests)
+[![NuGet version](https://img.shields.io/nuget/v/AspNetCore.AsyncInitialization.svg?logo=nuget)](https://www.nuget.org/packages/AspNetCore.AsyncInitialization)
+[![AppVeyor build](https://img.shields.io/appveyor/ci/thomaslevesque/aspnetcore-asyncinitialization.svg?logo=appveyor)](https://ci.appveyor.com/project/thomaslevesque/aspnetcore-asyncinitialization)
+[![AppVeyor tests](https://img.shields.io/appveyor/tests/thomaslevesque/aspnetcore-asyncinitialization.svg?logo=appveyor)](https://ci.appveyor.com/project/thomaslevesque/aspnetcore-asyncinitialization/build/tests)
 
 A simple helper to perform async application initialization in ASP.NET Core 2.0 or higher.
 
