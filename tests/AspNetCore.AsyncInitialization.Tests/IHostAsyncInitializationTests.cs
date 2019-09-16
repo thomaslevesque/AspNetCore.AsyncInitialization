@@ -4,11 +4,12 @@ using FakeItEasy;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Xunit;
 
 namespace AspNetCore.AsyncInitialization.Tests
 {
-    public class AsyncInitializationTests
+    public class IHostAsyncInitializationTests
     {
         [Fact]
         public async Task Single_initializer_is_called()
@@ -102,12 +103,10 @@ namespace AspNetCore.AsyncInitialization.Tests
             Assert.Equal("The async initialization service isn't registered, register it by calling AddAsyncInitialization() on the service collection or by adding an async initializer.", exception.Message);
         }
 
-        private static IWebHost CreateHost(Action<IServiceCollection> configureServices, bool validateScopes = false) =>
-            new WebHostBuilder()
-                .UseStartup<Startup>()
-                .ConfigureServices(configureServices)
-                .UseDefaultServiceProvider(options => options.ValidateScopes = validateScopes)
-                .Build();
+        private static IHost CreateHost(Action<IServiceCollection> configureServices, bool validateScopes = false) =>
+            new HostBuilder()
+            .ConfigureServices(configureServices)
+            .Build();
 
         public class Startup
         {
