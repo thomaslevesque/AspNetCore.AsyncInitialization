@@ -4,7 +4,9 @@
 [![AppVeyor build](https://img.shields.io/appveyor/ci/thomaslevesque/aspnetcore-asyncinitialization.svg?logo=appveyor)](https://ci.appveyor.com/project/thomaslevesque/aspnetcore-asyncinitialization)
 [![AppVeyor tests](https://img.shields.io/appveyor/tests/thomaslevesque/aspnetcore-asyncinitialization.svg?logo=appveyor)](https://ci.appveyor.com/project/thomaslevesque/aspnetcore-asyncinitialization/build/tests)
 
-A simple helper to perform async application initialization in ASP.NET Core 2.0 or higher.
+A simple helper to perform async application initialization in ASP.NET Core 2.x.
+
+***Note:** This project supports **only** ASP.NET Core 2.x. If you need to perform async initialization for the generic host (.NET Core 2.1+ and ASP.NET Core 3), use [Extensions.Hosting.AsyncInitialization](https://github.com/thomaslevesque/Extensions.Hosting.AsyncInitialization) instead.*
 
 ## Usage
 
